@@ -1,73 +1,113 @@
-# React + TypeScript + Vite
+# 🗺️ Narrator - Интерактивная игра-нарратив с процедурной генерацией мира
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Интерактивная браузерная игра с процедурной генерацией фэнтезийного мира, системой повествования и стратегическими элементами. Исследуйте королевства, взаимодействуйте с локациями и создавайте свою историю в мире **Ethereal**.
 
-Currently, two official plugins are available:
+![React](https://img.shields.io/badge/React-19.2.0-61DAFB?logo=react)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.9.3-3178C6?logo=typescript)
+![Vite](https://img.shields.io/badge/Vite-7.2.4-646CFF?logo=vite)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## ✨ Особенности
 
-## React Compiler
+- 🗺️ **Процедурная генерация мира** - Каждый запуск создает уникальный фэнтезийный мир с королевствами, городами и локациями
+- 📖 **Система повествования** - Интерактивные истории с выбором действий и последствий
+- ⚔️ **Режим войны** - Стратегические боевые действия на карте мира
+- 🌍 **Динамическая карта** - Интерактивная карта с различными биомами (леса, горы, равнины, океаны)
+- 🎨 **Красивый UI** - Современный интерфейс с эффектами и анимациями
+- 📊 **Система ресурсов** - Управление золотом и маной
+- 🕐 **Сезонность** - Смена времен года влияет на игровой процесс
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🛠️ Технологии
 
-## Expanding the ESLint configuration
+- **React 19.2** - UI библиотека
+- **TypeScript** - Типизированный JavaScript
+- **Vite** - Быстрый сборщик и dev-сервер
+- **D3.js** - Визуализация карты и геометрические вычисления
+- **Simplex Noise** - Генерация процедурного контента
+- **Polygon Clipping** - Работа с полигонами для границ королевств
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🚀 Быстрый старт
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Установка зависимостей
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Запуск в режиме разработки
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run dev
 ```
+
+Приложение откроется по адресу `http://localhost:5173`
+
+### Сборка для продакшена
+
+```bash
+npm run build
+```
+
+Собранные файлы будут в папке `dist/`
+
+### Предпросмотр продакшен-сборки
+
+```bash
+npm run preview
+```
+
+## 🎮 Как играть
+
+1. **Исследуйте карту** - Кликайте на локации (города, крепости, руины) для взаимодействия
+2. **Выбирайте действия** - Исследуйте, общайтесь, атакуйте или исследуйте локации
+3. **Читайте истории** - Следите за логом событий и модальными окнами с важными событиями
+4. **Управляйте ресурсами** - Следите за золотом и маной в нижней панели
+5. **Переключайте режимы** - Используйте кнопки для переключения между режимом войны и мира, а также смены сезонов
+
+## 📁 Структура проекта
+
+```
+narrator/
+├── src/
+│   ├── components/          # React компоненты
+│   │   ├── GameInterface.tsx    # Главный игровой интерфейс
+│   │   ├── WorldMap.tsx         # Компонент карты мира
+│   │   └── ui/                  # UI компоненты (карточки, логи, статус-бар)
+│   ├── services/
+│   │   └── narrator.ts          # Сервис генерации повествования
+│   ├── types/
+│   │   └── world.ts             # TypeScript типы для мира
+│   ├── utils/
+│   │   └── worldGenerator.ts    # Генератор процедурного мира
+│   └── App.tsx                  # Корневой компонент
+├── public/                  # Статические файлы
+├── dist/                    # Собранные файлы (не коммитится)
+└── package.json
+```
+
+## 🔧 Скрипты
+
+- `npm run dev` - Запуск dev-сервера с hot-reload
+- `npm run build` - Сборка проекта для продакшена
+- `npm run preview` - Предпросмотр продакшен-сборки
+- `npm run lint` - Проверка кода линтером
+
+## 🎯 Планы развития
+
+- [ ] Интеграция с LLM API для генерации историй
+- [ ] Сохранение прогресса игры
+- [ ] Расширенная система дипломатии между королевствами
+- [ ] Больше типов локаций и событий
+- [ ] Система достижений
+- [ ] Мультиплеер режим
+
+## 📝 Лицензия
+
+Этот проект создан в образовательных целях.
+
+## 👨‍💻 Разработка
+
+Проект использует современный стек React + TypeScript + Vite для быстрой разработки и сборки.
+
+---
+
+**Приятной игры в мире Ethereal!** ✨
