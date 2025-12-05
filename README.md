@@ -1,113 +1,97 @@
-# 🗺️ Narrator - Интерактивная игра-нарратив с процедурной генерацией мира
+# Narrator
 
-Интерактивная браузерная игра с процедурной генерацией фэнтезийного мира, системой повествования и стратегическими элементами. Исследуйте королевства, взаимодействуйте с локациями и создавайте свою историю в мире **Ethereal**.
+An interactive browser-based game featuring procedural world generation, a narrative storytelling system, and strategic gameplay elements. Explore kingdoms, interact with unique locations, and forge your own story in the world of **Ethereal**.
 
 ![React](https://img.shields.io/badge/React-19.2.0-61DAFB?logo=react)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9.3-3178C6?logo=typescript)
 ![Vite](https://img.shields.io/badge/Vite-7.2.4-646CFF?logo=vite)
 
-## ✨ Особенности
+## Features
 
-- 🗺️ **Процедурная генерация мира** - Каждый запуск создает уникальный фэнтезийный мир с королевствами, городами и локациями
-- 📖 **Система повествования** - Интерактивные истории с выбором действий и последствий
-- ⚔️ **Режим войны** - Стратегические боевые действия на карте мира
-- 🌍 **Динамическая карта** - Интерактивная карта с различными биомами (леса, горы, равнины, океаны)
-- 🎨 **Красивый UI** - Современный интерфейс с эффектами и анимациями
-- 📊 **Система ресурсов** - Управление золотом и маной
-- 🕐 **Сезонность** - Смена времен года влияет на игровой процесс
+- **Procedural World Generation** — Every session creates a unique fantasy world with distinct kingdoms, cities, and landmarks.
+- **Narrative System** — Interactive events with choices that impact your resources and story progression.
+- **War Mode** — Strategic layer allowing for combat actions and territory conquest on the world map.
+- **Dynamic Map** — Interactive visualization with diverse biomes (forests, mountains, plains, oceans) built with D3.js.
+- **Resource Management** — Balance gold and mana reserves to sustain your journey.
+- **Seasonal System** — Dynamic season changes that alter the visual atmosphere of the world.
 
-## 🛠️ Технологии
+## Tech Stack
 
-- **React 19.2** - UI библиотека
-- **TypeScript** - Типизированный JavaScript
-- **Vite** - Быстрый сборщик и dev-сервер
-- **D3.js** - Визуализация карты и геометрические вычисления
-- **Simplex Noise** - Генерация процедурного контента
-- **Polygon Clipping** - Работа с полигонами для границ королевств
+- **React 19** — User Interface
+- **TypeScript** — Type Safety & Logic
+- **Vite** — Build Tool & Dev Server
+- **D3.js** — Data Visualization & Map Geometry
+- **Simplex Noise** — Procedural Generation Algorithms
+- **Polygon Clipping** — Geometric Operations
 
-## 🚀 Быстрый старт
+## Quick Start
 
-### Установка зависимостей
+### Prerequisites
 
-```bash
-npm install
-```
+Ensure you have Node.js installed on your machine.
 
-### Запуск в режиме разработки
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+### Development
+
+Start the development server with hot-reload:
 
 ```bash
 npm run dev
 ```
 
-Приложение откроется по адресу `http://localhost:5173`
+The application will be available at `http://localhost:5173`.
 
-### Сборка для продакшена
+### Production Build
+
+Build the project for production:
 
 ```bash
 npm run build
 ```
 
-Собранные файлы будут в папке `dist/`
-
-### Предпросмотр продакшен-сборки
+Preview the production build locally:
 
 ```bash
 npm run preview
 ```
 
-## 🎮 Как играть
+## How to Play
 
-1. **Исследуйте карту** - Кликайте на локации (города, крепости, руины) для взаимодействия
-2. **Выбирайте действия** - Исследуйте, общайтесь, атакуйте или исследуйте локации
-3. **Читайте истории** - Следите за логом событий и модальными окнами с важными событиями
-4. **Управляйте ресурсами** - Следите за золотом и маной в нижней панели
-5. **Переключайте режимы** - Используйте кнопки для переключения между режимом войны и мира, а также смены сезонов
+1. **Explore** — Interact with the map by clicking on locations such as cities, fortresses, and ruins.
+2. **Decide** — Choose your actions carefully: investigate mysteries, negotiate with locals, or declare war.
+3. **Manage** — Monitor your Gold and Mana resources in the status bar.
+4. **Control** — Use the interface controls to toggle between War/Peace modes or change the current season.
 
-## 📁 Структура проекта
+## Project Structure
 
 ```
 narrator/
 ├── src/
-│   ├── components/          # React компоненты
-│   │   ├── GameInterface.tsx    # Главный игровой интерфейс
-│   │   ├── WorldMap.tsx         # Компонент карты мира
-│   │   └── ui/                  # UI компоненты (карточки, логи, статус-бар)
+│   ├── components/          # React components
+│   │   ├── GameInterface.tsx    # Main game layout and logic
+│   │   ├── WorldMap.tsx         # D3.js map visualization
+│   │   └── ui/                  # UI elements (Cards, Logs, Status)
 │   ├── services/
-│   │   └── narrator.ts          # Сервис генерации повествования
+│   │   └── narrator.ts          # Narrative generation service
 │   ├── types/
-│   │   └── world.ts             # TypeScript типы для мира
+│   │   └── world.ts             # TypeScript interfaces for world data
 │   ├── utils/
-│   │   └── worldGenerator.ts    # Генератор процедурного мира
-│   └── App.tsx                  # Корневой компонент
-├── public/                  # Статические файлы
-├── dist/                    # Собранные файлы (не коммитится)
+│   │   └── worldGenerator.ts    # Procedural generation algorithms
+│   └── App.tsx                  # Application entry point
+├── public/                  # Static assets
 └── package.json
 ```
 
-## 🔧 Скрипты
+## License
 
-- `npm run dev` - Запуск dev-сервера с hot-reload
-- `npm run build` - Сборка проекта для продакшена
-- `npm run preview` - Предпросмотр продакшен-сборки
-- `npm run lint` - Проверка кода линтером
-
-## 🎯 Планы развития
-
-- [ ] Интеграция с LLM API для генерации историй
-- [ ] Сохранение прогресса игры
-- [ ] Расширенная система дипломатии между королевствами
-- [ ] Больше типов локаций и событий
-- [ ] Система достижений
-- [ ] Мультиплеер режим
-
-## 📝 Лицензия
-
-Этот проект создан в образовательных целях.
-
-## 👨‍💻 Разработка
-
-Проект использует современный стек React + TypeScript + Vite для быстрой разработки и сборки.
-
----
-
-**Приятной игры в мире Ethereal!** ✨
+This project is created for educational purposes.
