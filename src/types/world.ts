@@ -14,7 +14,9 @@ export interface BoundingBox {
   height: number;
 }
 
-export type BiomeType = 'OCEAN' | 'SHALLOW' | 'BEACH' | 'PLAIN' | 'FOREST' | 'MOUNTAIN' | 'SNOW';
+export type BiomeType = 'OCEAN' | 'SHALLOW' | 'BEACH' | 'PLAIN' | 'FOREST' | 'HILLS' | 'MOUNTAIN' | 'SNOW';
+
+export type ClimateZone = 'NORTH' | 'CENTRAL' | 'SOUTH';
 
 export interface POI {
   id: string;
@@ -23,6 +25,8 @@ export interface POI {
   position: Point2D;
   kingdomId: number;
   description?: string;
+  climate: ClimateZone; // Климат привязан к локации
+  biome: BiomeType; // Биом локации (FOREST, PLAIN, SNOW, etc.)
 }
 
 export interface KingdomGeography {
@@ -32,6 +36,7 @@ export interface KingdomGeography {
   neighboringKingdoms: number[];
   hasCoastline: boolean;
   dominantBiome: BiomeType;
+  climateZone: ClimateZone; // Доминирующий климат королевства (для начальной генерации и культуры)
 }
 
 export interface Kingdom {
@@ -112,7 +117,7 @@ export interface WorldGenConfig {
 export const DEFAULT_WORLD_CONFIG: WorldGenConfig = {
   width: 1400,
   height: 1100,
-  numKingdoms: 5,
-  numPoints: 2000, // Reduced for performance with war mode
+  numKingdoms: 5, // Strictly 5 kingdoms
+  numPoints: 2500, // Better resolution
   numCitiesPerKingdom: 3,
 };

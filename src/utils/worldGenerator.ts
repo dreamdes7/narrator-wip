@@ -3,13 +3,20 @@ import { createNoise2D } from 'simplex-noise';
 import polygonClipping from 'polygon-clipping';
 import type { 
   WorldData, WorldGenConfig, Kingdom, POI, Point2D, BiomeType, 
-  WorldDataJSON, DistantLand, CellData 
+  WorldDataJSON, DistantLand, CellData, ClimateZone
 } from '../types/world';
 
 // --- Name Banks ---
-const KINGDOM_NAMES = [
-  "Eldoria", "Stormhold", "Mythralis", "Shadowfen", "Auroria", 
-  "Ironvale", "Frostmere", "Sunspire", "Thornwood", "Ravenmoor"
+const KINGDOM_NAMES_NORTH = [
+  "Frostmere", "Winterhold", "Starkhaven", "Icevein", "Glaciera", "Northgard"
+];
+
+const KINGDOM_NAMES_SOUTH = [
+  "Sunspire", "Sandstone", "Oasis", "Dunehaven", "Solara", "Vermilion", "Goldcoast"
+];
+
+const KINGDOM_NAMES_CENTRAL = [
+  "Eldoria", "Mythralis", "Shadowfen", "Auroria", "Ironvale", "Thornwood", "Ravenmoor", "Highgarden", "Riverrun"
 ];
 
 const CITY_NAMES = [
@@ -20,17 +27,30 @@ const CITY_NAMES = [
   "Duskhollow", "Brightwater", "Shadowmere", "Thunderpeak", "Silentwood"
 ];
 
-const KINGDOM_COLORS = [
-  { fill: "#c9ada7", border: "#9a8c98" },
-  { fill: "#a5a58d", border: "#6b705c" },
-  { fill: "#b5838d", border: "#6d6875" },
-  { fill: "#ddbea9", border: "#a5a58d" },
-  { fill: "#b7b7a4", border: "#7f7f6f" },
-  { fill: "#a2d2ff", border: "#6699cc" },
-  { fill: "#ffd6a5", border: "#d4a373" },
-  { fill: "#caffbf", border: "#80b268" },
-  { fill: "#ffc6ff", border: "#c77dff" },
-  { fill: "#bde0fe", border: "#7bb3d1" },
+// Climate-appropriate color palettes
+const KINGDOM_COLORS_NORTH = [
+  { fill: "#a8d5e5", border: "#5a9ab8" },  // Ice blue
+  { fill: "#b8c5d6", border: "#7a8fa6" },  // Steel grey
+  { fill: "#c4d4e0", border: "#8ba3b8" },  // Frost
+  { fill: "#9fb8c7", border: "#6890a5" },  // Slate blue
+  { fill: "#d1dfe8", border: "#9ab5c7" },  // Pale winter
+];
+
+const KINGDOM_COLORS_CENTRAL = [
+  { fill: "#a5a58d", border: "#6b705c" },  // Olive
+  { fill: "#b7b7a4", border: "#7f7f6f" },  // Sage
+  { fill: "#c9ada7", border: "#9a8c98" },  // Dusty rose
+  { fill: "#caffbf", border: "#80b268" },  // Spring green
+  { fill: "#b5838d", border: "#6d6875" },  // Mauve
+  { fill: "#a8c5a0", border: "#6b8e63" },  // Forest
+];
+
+const KINGDOM_COLORS_SOUTH = [
+  { fill: "#f4d58d", border: "#c9a227" },  // Golden sand
+  { fill: "#ddbea9", border: "#a5a58d" },  // Desert tan
+  { fill: "#ffd6a5", border: "#d4a373" },  // Amber
+  { fill: "#e8c49a", border: "#b8956a" },  // Terracotta light
+  { fill: "#f0c987", border: "#c9a54a" },  // Sunlit gold
 ];
 
 // --- Internal Cell Type ---
@@ -53,6 +73,13 @@ interface ContinentShape {
   scaleY: number;
   rotation: number;
   peninsulas: { angle: number; length: number; width: number }[];
+}
+
+// --- Helper: Get Climate Zone by Latitude ---
+function getClimateZone(y: number, height: number): ClimateZone {
+    if (y < height * 0.35) return 'NORTH';
+    if (y > height * 0.70) return 'SOUTH';
+    return 'CENTRAL';
 }
 
 // --- Main Generator ---
@@ -99,14 +126,37 @@ export function generateWorld(config: WorldGenConfig): WorldData {
     const elevation = calculateElevation(x, y, continentShape, noise2D, width, height);
     const isWater = elevation < 0.25;
 
+    // Biome Logic based on Latitude AND Noise
     let biome: BiomeType = 'OCEAN';
-    if (elevation < 0.20) biome = 'OCEAN';
-    else if (elevation < 0.25) biome = 'SHALLOW';
-    else if (elevation < 0.30) biome = 'BEACH';
-    else if (elevation < 0.50) biome = 'PLAIN';
-    else if (elevation < 0.70) biome = 'FOREST';
-    else if (elevation < 0.85) biome = 'MOUNTAIN';
-    else biome = 'SNOW';
+    
+    // Normalize Y for latitude logic (0 at top/north, 1 at bottom/south)
+    const normalizedY = y / height;
+    
+    if (isWater) {
+       if (elevation < 0.20) biome = 'OCEAN';
+       else if (elevation < 0.25) biome = 'SHALLOW';
+    } else {
+       if (elevation < 0.30) biome = 'BEACH';
+       else if (elevation > 0.58) biome = 'HILLS';    // Highlands/foothills
+       else {
+           // Climate-based biomes
+           if (normalizedY < 0.25) {
+               // Far North - snowy
+               if (elevation > 0.45) biome = 'SNOW';
+               else if (elevation > 0.38) biome = 'FOREST'; // Taiga
+               else biome = 'PLAIN'; // Tundra plains
+           } else if (normalizedY > 0.75) {
+               // Far South - arid
+               if (elevation > 0.48) biome = 'HILLS'; // Desert hills
+               else biome = 'PLAIN'; // Savanna/desert
+           } else {
+               // Central temperate
+               if (elevation > 0.50) biome = 'FOREST';
+               else if (elevation > 0.40) biome = random() > 0.5 ? 'FOREST' : 'PLAIN'; // Mixed
+               else biome = 'PLAIN';
+           }
+       }
+    }
 
     const cellPolygon = voronoi.cellPolygon(i);
     const polygon: [number, number][] = cellPolygon ? cellPolygon.map(p => [p[0], p[1]]) : [];
@@ -135,7 +185,7 @@ export function generateWorld(config: WorldGenConfig): WorldData {
     for (let attempt = 0; attempt < 50; attempt++) {
       const rndIdx = landIndices[Math.floor(random() * landIndices.length)];
       if (capitalIndices.includes(rndIdx)) continue;
-      if (cells[rndIdx].biome === 'BEACH' || cells[rndIdx].biome === 'MOUNTAIN') continue;
+      if (cells[rndIdx].biome === 'BEACH' || cells[rndIdx].biome === 'MOUNTAIN' || cells[rndIdx].biome === 'OCEAN') continue;
 
       let minDist = Infinity;
       for (const capIdx of capitalIndices) {
@@ -241,6 +291,23 @@ export function generateWorld(config: WorldGenConfig): WorldData {
       }
     }
 
+    // --- Determine Climate Zone ---
+    const climateZone = getClimateZone(centroidY, height);
+
+    // --- Select Name based on Climate ---
+    let name = "";
+    if (climateZone === 'NORTH') {
+        name = KINGDOM_NAMES_NORTH[Math.floor(random() * KINGDOM_NAMES_NORTH.length)];
+    } else if (climateZone === 'SOUTH') {
+        name = KINGDOM_NAMES_SOUTH[Math.floor(random() * KINGDOM_NAMES_SOUTH.length)];
+    } else {
+        name = KINGDOM_NAMES_CENTRAL[Math.floor(random() * KINGDOM_NAMES_CENTRAL.length)];
+    }
+    // Fallback if random picks collide
+    if (kingdoms.some(k => k.name === name)) {
+        name = name + " II";
+    }
+
     // Analyze neighbors
     const neighborSet = new Set<number>();
     let hasCoast = false;
@@ -257,16 +324,20 @@ export function generateWorld(config: WorldGenConfig): WorldData {
     const capitalCell = cells[capitalIndices[k]];
     const capital: POI = {
       id: `capital-${k}`,
-      name: KINGDOM_NAMES[k % KINGDOM_NAMES.length],
+      name: name,
       type: 'capital',
       position: { x: Math.round(capitalCell.center.x), y: Math.round(capitalCell.center.y) },
       kingdomId: k,
-      description: `The grand capital of ${KINGDOM_NAMES[k % KINGDOM_NAMES.length]}`
+      description: `The grand capital of ${name}`,
+      climate: getClimateZone(capitalCell.center.y, height),
+      biome: capitalCell.biome
     };
 
     const cities: POI[] = [];
     const sortedByDist = [...kingdomCells]
-      .filter(c => c.index !== capitalIndices[k] && c.biome !== 'MOUNTAIN' && c.biome !== 'SNOW' && c.biome !== 'BEACH')
+      // Allow cities everywhere except high peaks (MOUNTAIN) and water edges (BEACH)
+      // HILLS, FOREST, PLAIN, SNOW are all valid for settlements
+      .filter(c => c.index !== capitalIndices[k] && c.biome !== 'MOUNTAIN' && c.biome !== 'BEACH' && c.biome !== 'OCEAN' && c.biome !== 'SHALLOW')
       .sort((a, b) => {
         const dA = Math.sqrt((a.center.x - capitalCell.center.x) ** 2 + (a.center.y - capitalCell.center.y) ** 2);
         const dB = Math.sqrt((b.center.x - capitalCell.center.x) ** 2 + (b.center.y - capitalCell.center.y) ** 2);
@@ -282,16 +353,24 @@ export function generateWorld(config: WorldGenConfig): WorldData {
           name: CITY_NAMES[cityNameIdx++ % CITY_NAMES.length],
           type: 'city',
           position: { x: Math.round(cityCell.center.x), y: Math.round(cityCell.center.y) },
-          kingdomId: k
+          kingdomId: k,
+          climate: getClimateZone(cityCell.center.y, height),
+          biome: cityCell.biome
         });
       }
     }
 
+    // Select color palette based on climate zone
+    const colorPalette = climateZone === 'NORTH' ? KINGDOM_COLORS_NORTH :
+                         climateZone === 'SOUTH' ? KINGDOM_COLORS_SOUTH :
+                         KINGDOM_COLORS_CENTRAL;
+    const colorIndex = Math.floor(random() * colorPalette.length);
+
     kingdoms.push({
       id: k,
-      name: KINGDOM_NAMES[k % KINGDOM_NAMES.length],
-      color: KINGDOM_COLORS[k % KINGDOM_COLORS.length].fill,
-      borderColor: KINGDOM_COLORS[k % KINGDOM_COLORS.length].border,
+      name,
+      color: colorPalette[colorIndex].fill,
+      borderColor: colorPalette[colorIndex].border,
       capital,
       cities,
       geography: {
@@ -304,7 +383,8 @@ export function generateWorld(config: WorldGenConfig): WorldData {
         area,
         neighboringKingdoms: Array.from(neighborSet),
         hasCoastline: hasCoast,
-        dominantBiome
+        dominantBiome,
+        climateZone 
       },
       svgPath,
       cellIds: kingdomCellIds
@@ -340,7 +420,7 @@ export function generateWorld(config: WorldGenConfig): WorldData {
     biomeGroups[c.biome]!.push(c);
   });
 
-  for (const biome of ['MOUNTAIN', 'FOREST', 'SNOW'] as BiomeType[]) {
+  for (const biome of ['HILLS', 'FOREST', 'SNOW'] as BiomeType[]) {
     const validCells = (biomeGroups[biome] || []).filter(c => c.polygon.length >= 3);
     if (validCells.length > 0) {
       let merged: polygonClipping.MultiPolygon = [[validCells[0].polygon]];

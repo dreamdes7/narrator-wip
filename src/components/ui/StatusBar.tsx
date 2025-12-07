@@ -35,3 +35,6 @@ const StatusBar: React.FC<StatusBarProps> = ({ year, gold, mana }) => {
 export default StatusBar;
 
 
+
+
+
